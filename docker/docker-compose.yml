@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+    controller:
+        build: controller
+        command: sh /tmp/start.sh
+        hostname: controller
+        user: controller
+        expose:
+            - '8080'
+            - '6653'
+        networks:
+            test:
+                ipv4_address: 10.5.0.2
+
+    network:
+        build: network
+        command: sh /tmp/start.sh
+        hostname: network
+        user: network
+        privileged: true
+        environment:
+            CONTROLLER_IP: '10.5.0.2'
+        networks:
+            - test
+        depends_on:
+            - controller
+
+   
+networks:
+    test:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.5.0.0/16
